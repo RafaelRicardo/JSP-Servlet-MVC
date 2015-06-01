@@ -1,0 +1,45 @@
+<%-- 
+    Document   : MostrarLibros
+    Created on : 24/05/2015, 07:28:03 PM
+    Author     : Ricardo
+--%>
+
+<%@page import="com.arquitecturajava.aplicacion.ControladorLibro"%>
+<%@page import="java.util.List"%>
+<%@page import="com.arquitecturajava.Libro"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Lista de libros</title>
+    </head>
+    <body>
+        <form method="POST" action="Filtrar.do">
+        <select name="categoria">
+            <option value="seleccionar">seleccionar</option>
+            <%
+    List<String> listaDeCategorias = null;
+    listaDeCategorias = (List<String>)request.getAttribute("listaDeCategorias");
+    for(String st: listaDeCategorias){
+       if(st.equals(request.getParameter("categoria"))){%>
+       <option value="<%=st%>"selected><%=st%></option>
+       <%}else{%>
+       <option value="<%=st%>"><%=st%></option>
+       <%}}%>
+        </select>
+        <input type="submit" value="FILTRAR">
+    </form><br>  
+       <%
+    List<Libro> listaDeLibros = (List<Libro>)request.getAttribute("listaDeLibros");
+        for(Libro libro: listaDeLibros){%>
+            <%=libro.getIsbn()%>
+            <%=libro.getTitulo()%>
+            <%=libro.getCategoria()%>
+           <a href="BorrarLibro.do?isbn=<%=libro.getIsbn()%>">Borrar</a>
+           <a href="FormularioEditarLibro.do?isbn=<%=libro.getIsbn()%>">Editar</a><br>
+            <% }
+    %>
+    <a href="FormularioInsertarLibro.jsp">Insertar Libro</a>
+</body>
+</html>
