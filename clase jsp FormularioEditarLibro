@@ -1,0 +1,42 @@
+<%-- 
+    Document   : FormularioEditarLibro
+    Created on : 27/05/2015, 04:47:19 PM
+    Author     : Ricardo
+--%>
+
+<%@page import="java.util.List"%>
+<%@page import="com.arquitecturajava.Libro"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%Libro libro = Libro.buscarPorClave(request.getParameter("isbn"));%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+    </head>
+    <body>
+        <form id="formularioEdicion" action="SalvarLibro.do">
+            <fieldset>
+                <legend>Formulario alta libro </legend>
+                <p><label for="isbn">ISBN</label>
+                    <input type="text" id="isbn" name="isbn" value="<%=libro.getIsbn()%>"/></p>         
+                <p><label for="titlo">Titulo</label>
+                    <input type="text" id="titulo" name="titulo" value="<%=libro.getTitulo()%>"></p>
+                <p><label for="categoria">Categoria:</label>
+                    <select name="categoria">
+                        <%
+                            List<String> listaDeCategorias
+                                    = Libro.buscarTodasLasCategorias();
+                            for (String categoria : listaDeCategorias) {
+                            if (libro.getCategoria().equals(categoria)) {%>
+                        <option value="<%=categoria%>" selected="selected">
+                            <%=categoria%></option>
+                        <%}else{%>
+                        <option value="<%=categoria%>"><%=categoria%></option>
+                        <%}}%>
+                    </select> <br/> </p>
+                <p><input type="submit" value="Salvar"></p>
+            </fieldset>
+        </form>
+    </body>
+</html>
