@@ -1,0 +1,116 @@
+package com.arquitecturajava;
+
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.Statement;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class DataBaseHelper<T> {
+    private static final String DRIVER = "org.gjt.mm.mysql.Driver";
+    private static final String URL = "jdbc:mysql://localhost/arquitecturajava";
+    private static final String USUARIO = "root";
+    private static final String CLAVE = "";
+    
+    Connection conexion;
+    Statement sentencia;
+    ResultSet filas;
+   
+    /**
+     * Metodo que modifica los registros
+     * @param consultaSQL
+     * @return
+     * @throws SQLException 
+     */
+    public int modificarRegistro(String consultaSQL){
+            int filasAfectadas = 0;
+        
+            try{
+            Class.forName(DRIVER);
+            conexion = (Connection) DriverManager.getConnection(URL, USUARIO, CLAVE);
+            sentencia = (Statement) conexion.createStatement();
+            filasAfectadas = sentencia.executeUpdate(consultaSQL);
+            }catch (ClassNotFoundException ex) {
+                System.out.println("calse no encontrada "+ ex.getMessage());
+                throw new DataBaseException("clase no encontrada");
+            }catch(SQLException e){
+                System.out.println("error en el sql "+e.getMessage());
+                throw new DataBaseException("error de sql");
+            }
+            finally{
+                if(sentencia == null){
+                try{
+                    sentencia.close();
+                }catch(SQLException e){System.out.println("errror en la consulta, 'DataBaseHelper'");}
+                }
+                if(conexion == null){
+                  try{
+                    conexion.close();
+                  }catch(SQLException e){System.out.println("error en la consulta, 'DataBaseHelper'");}
+                }
+            }
+            return filasAfectadas;
+    }
+
+    /**
+     * Metodo que selecciona registros
+     * @param consultaSQL
+     * @return 
+     */
+    public List<T> seleccionarRegistros(String consultaSQL, Class clase){
+        
+          List<T> listaDeObjetos = new ArrayList<T>();
+        try{
+            Class.forName(DRIVER);
+             conexion = (Connection) DriverManager.getConnection(URL, USUARIO, CLAVE);
+            sentencia = (Statement) conexion.createStatement();
+            filas = sentencia.executeQuery(consultaSQL);
+
+          if(clase.equals(Libro.class)){
+            while(filas.next()){
+                listaDeObjetos.add((T) new Libro(filas.getString("isbn"),
+                        filas.getString("titulo"), filas.getString("categoria")));
+            }
+          }
+          if(clase.equals(String.class)){
+             while(filas.next()){
+                listaDeObjetos.add((T) new String(filas.getString("categoria")));
+            }
+          }
+            
+         /*   while(filas.next()){
+                T objeto = (T) Class.forName(clase.getName()).newInstance();
+                Method[] metodos = objeto.getClass().getDeclaredMethods();
+                for(int i =0; i < metodos.length; i++){
+                    if(metodos[i].getName().startsWith("set") ){
+                        metodos[i].invoke(objeto,
+                                filas.getString(metodos[i].getName().substring(3)));
+                    }
+                    if(objeto.getClass().getName().equals("String")){
+                        objeto = (T) filas.getString(1);
+                    }
+                }
+                listaDeObjetos.add(objeto);
+            }*/
+            
+        }catch (SQLException | ClassNotFoundException ex) {
+            System.out.println("ver getconnection ó ver driver");
+            throw new DataBaseException();
+        } finally{
+            if(sentencia != null){
+             try{   sentencia.cancel();}catch(SQLException e){}
+            }
+            if(conexion != null){
+                try{ conexion.close();}catch(SQLException e){}
+            }
+           
+        }
+        return listaDeObjetos;
+    }
+}
