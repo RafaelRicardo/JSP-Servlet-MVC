@@ -1,0 +1,46 @@
+<%-- 
+    Document   : FormularioInsertarLibro
+    Created on : 24/05/2015, 06:49:00 PM
+    Author     : Ricardo
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+         <link rel="stylesheet" type="text/css" href="css/formato.css"/>
+        <script type="text/javascript" src="js/validacion.js"></script>
+       <script type="text/javascript">
+            function validacion(){
+                var isbn = document.getElementById("isbn");
+                var miformulario = document.getElementById("miformulario");
+                if(isbn.value == ""){
+                    alert("Datos no validos");
+                    return false;
+                }    else{
+                   miformulario.submit();
+               }
+            }
+        </script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Formulario Libro</title>
+    </head>
+    <body>
+        <div>
+            <form method="POST" action="ControladorLibro.do">
+                <fieldset>
+            <legend>Formulario alta libro</legend>
+            <p> <label for="isbn">ISBN: </label>
+                <input id="isbn" type="text" name="isbn"></p>
+            <p> <label for="titulo">TITULO: </label> 
+                    <input id="titulo" type="text" name="titulo"></p>
+            <p> <label for="categoria">CATEGORIA:</label> 
+                <input id="categoria" type="text" name="categoria"></p>
+                <p>
+                    <input type="submit" value="Insertar" onsubmit="validacion()">
+                </p>
+                </fieldset>
+            </form>
+        </div>
+    </body>
+</html>
